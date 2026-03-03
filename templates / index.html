@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>RAG Pipeline</title></head>
+<body>
+    <h1>RAG Document Ingestion</h1>
+    <input type="file" id="docFile">
+    <button onclick="upload()">Upload & Ingest</button>
+    <p id="status"></p>
+    <hr>
+    <input type="text" id="userQuery" placeholder="Ask a question about the doc...">
+    <button onclick="ask()">Ask AI</button>
+    <div id="response" style="margin-top: 20px; font-weight: bold;"></div>
+
+    <script>
+        async function upload() {
+            let formData = new FormData();
+            formData.append('file', document.getElementById('docFile').files[0]);
+            let res = await fetch('/ingest', { method: 'POST', body: formData });
+            let data = await res.json();
+            document.getElementById('status').innerText = data.message;
+        }
+
+        async function ask() {
+            let q = document.getElementById('userQuery').value;
+            let res = await fetch('/ask', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({question: q})
+            });
+            let data = await res.json();
+            document.getElementById('response').innerText = data.answer;
+        }
+    </script>
+</body>
+</html>
